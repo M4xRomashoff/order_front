@@ -31,3 +31,8 @@ label {
   -webkit-border-radius: 50%;
   border-radius: 50%;
 }
+
+.table-row:hover {
+  background-color: #bfda87;
+  cursor: pointer;
+}

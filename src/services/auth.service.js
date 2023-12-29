@@ -10,11 +10,6 @@ const register = (username, email, password) => {
   });
 };
 
-const  requestMessage = (username, email, password) => {
-  return api.post(API_URL + "requests", {
-    username, email, password
-  });
-};
 
 
 
@@ -42,7 +37,6 @@ const getCurrentUser = () => {
 };
 
 const AuthService = {
-  requestMessage,
   register,
   login,
   logout,

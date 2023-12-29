@@ -1,38 +1,19 @@
 import React, { useState, useEffect } from "react";
-
 import UserService from "../services/user.service";
 import {TextField} from "@mui/material";
 import {useDispatch, useSelector} from "react-redux";
-import avatar from "../common/avatar.png";
 import {ErrorMessage, Field, Form, Formik} from "formik";
 import {clearMessage} from "../slices/message";
 import * as Yup from "yup";
-import {register, sendMessage} from "../slices/auth";
+import {showSuccessSnackbar, showErrorSnackbar} from "../actions/snackbarActions";
+
+
 
 const Order = () => {
   const [successful, setSuccessful] = useState(false);
   const [message, setMessage] = useState("");
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
   const dispatch = useDispatch();
   const { user: currentUser } = useSelector((state) => state.auth);
-
-  // useEffect(() => {
-  //   UserService.getPublicContent().then(
-  //     (response) => {
-  //       setContent(response.data);
-  //     },
-  //     (error) => {
-  //       const _content =
-  //         (error.response && error.response.data) ||
-  //         error.message ||
-  //         error.toString();
-  //
-  //       setContent(_content);
-  //     }
-  //   );
-  // }, []);
-
 
   useEffect(() => {
     dispatch(clearMessage());
@@ -68,16 +49,29 @@ const Order = () => {
 
   const handleMessage = (formValue) => {
     const { username, email, message } = formValue;
-
     setSuccessful(false);
+    UserService.requestMessage(username, email, message)
+          .then(() => {
+              dispatch(showSuccessSnackbar("Заявка зарегистрирована"));
+              window.alert('Заявка зарегистрирована');
+              setMessage('');
+          })
+          .catch((error) => {
+              dispatch(showErrorSnackbar(error.toString()))
+          });
+  };
 
-    dispatch(sendMessage({ username, email, message }))
-        .unwrap()
+  const handleUserMessage = () => {
+    const email = currentUser.email;
+    const username = currentUser.username;
+    UserService.requestMessage(username, email, message)
         .then(() => {
-          setSuccessful(true);
+            dispatch(showSuccessSnackbar("Заявка зарегистрирована"));
+            window.alert('Заявка зарегистрирована');
+            setMessage('');
         })
-        .catch(() => {
-          setSuccessful(false);
+        .catch((error) => {
+            dispatch(showErrorSnackbar(error.toString()))
         });
   };
 
@@ -142,6 +136,8 @@ const Order = () => {
                               <Field
                                   name="message"
                                   type="text"
+                                  value={message}
+                                  onChange={(value)=>setMessage(value.target.value)}
                                   className={
                                       "form-control" +
                                       (errors.message && touched.message
@@ -168,7 +164,9 @@ const Order = () => {
               </Formik>
             </div>
         )}
-        {currentUser && ( <TextField
+        {currentUser && (
+            <>
+            <TextField
               style={{width:'50%', backgroundColor: 'rgb(253,252,252)'}}
               id="outlined-multiline-static"
               multiline
@@ -177,7 +175,15 @@ const Order = () => {
               variant="standard"
               value={message}
               onChange={(value)=>setMessage(value.target.value)}
-          />)}
+          />
+          <div >
+            <button className="btn btn-primary btn-block mt-4" style={{maxWidth:'100px'}} onClick={handleUserMessage}>
+              Отправить
+            </button>
+          </div>
+          </>
+
+        )}
       </header>
     </div>
   );

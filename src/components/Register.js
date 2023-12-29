@@ -11,6 +11,7 @@ const Register = () => {
   const { message } = useSelector((state) => state.message);
   const dispatch = useDispatch();
 
+
   useEffect(() => {
     dispatch(clearMessage());
   }, [dispatch]);
