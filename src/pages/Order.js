@@ -37,18 +37,11 @@ const Order = () => {
     email: Yup.string()
         .email("Это не похоже на адрес эл. почты")
         .required(" Это поле обязательно для заполнения "),
-    message: Yup.string()
-        .test(
-            "len",
-            "Это поле должно содержать хотя бы один символ",
-            (val) =>
-                val && val.toString().length >= 1
-        )
-        .required(" Это поле обязательно для заполнения "),
   });
 
   const handleMessage = (formValue) => {
-    const { username, email, message } = formValue;
+    const { username, email} = formValue;
+
     setSuccessful(false);
     UserService.requestMessage(username, email, message)
           .then(() => {
